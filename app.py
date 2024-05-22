@@ -15,6 +15,9 @@ logger.addHandler(handler)
 app_curciutid = os.getenv("APP_CIRCUIT_ID")
 app_remoteid = os.getenv("APP_REMOTE_ID")
 
+ETH0 = "eth0"
+GT0 = "gt0.810"
+
 q = queue.Queue()
 
 logger.info(f"option82: {app_curciutid},{app_remoteid}")
@@ -38,7 +41,7 @@ def recv_handler(q):
             continue
 
         # only modify packet when outgoing is gt0 (which means incoming is eth0) AND if it's dhcp discover or request
-        if iface == "eth0" and (p[DHCP].options[0][1] == 1 or p[DHCP].options[0][1] == 3):
+        if iface == ETH0 and (p[DHCP].options[0][1] == 1 or p[DHCP].options[0][1] == 3):
             circuitid = app_curciutid
             remoteid = app_remoteid
 
@@ -72,7 +75,7 @@ def recv_handler(q):
             total_packets += 1
             logger.info(f"Total packets handled: {total_packets}")
 
-        oiface = "eth0" if iface == "gt0" else "gt0"
+        oiface = ETH0 if iface == GT0 else GT0
         logger.debug(f"hash {packet_hash} oiface: {oiface} outgoing raw: {bytes(p)}")
         last_packet_hash = packet_hash
         sendp(p, iface=oiface)
@@ -80,7 +83,7 @@ def recv_handler(q):
 def recv_thread(iface, q):
     sniff(iface=iface, filter="udp and (port 67 or port 68)", prn=lambda p: q.put((iface,p)))
 
-for i in ("eth0", "gt0"):
+for i in (ETH0, GT0):
     t = threading.Thread(target=recv_thread, args=(i, q))
     t.start()
 

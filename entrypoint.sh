@@ -7,6 +7,8 @@ else
     ip link add gt0 type gretap remote ${APP_GRE_REMOTE_IP}
 fi
 ip link set gt0 up
-ip addr add 192.0.2.1/32 dev gt0
+ip link add gt0.810 link gt0 type vlan id 810
+ip link set gt0.810 up
+ip addr add 192.0.2.1/32 dev gt0.810
 
 exec "$@"
