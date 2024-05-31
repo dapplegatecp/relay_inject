@@ -16,7 +16,8 @@ app_curciutid = os.getenv("APP_CIRCUIT_ID")
 app_remoteid = os.getenv("APP_REMOTE_ID")
 
 ETH0 = "eth0"
-GT0 = "gt0.810"
+# GT0 = "gt0.810"
+GT0 = "gt0"
 
 q = queue.Queue()
 
@@ -41,7 +42,8 @@ def recv_handler(q):
             continue
 
         # only modify packet when outgoing is gt0 (which means incoming is eth0) AND if it's dhcp discover or request
-        if iface == ETH0 and (p[DHCP].options[0][1] == 1 or p[DHCP].options[0][1] == 3):
+        if False:
+        # if iface == ETH0 and (p[DHCP].options[0][1] == 1 or p[DHCP].options[0][1] == 3):
             circuitid = app_curciutid
             remoteid = app_remoteid
 
